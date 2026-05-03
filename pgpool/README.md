@@ -11,7 +11,7 @@ docker build -t pgpool:4.6.1-2 .
 ## Run
 
 ```bash
-docker run --rm -p 5432:5432 pgpool:4.6.1-2
+docker run --rm -p 5432:5432 -e BACKEND_HOSTS=localhost:15432 pgpool:4.6.1-2
 ```
 
 ## Notes

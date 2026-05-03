@@ -15,7 +15,11 @@ ARG PGPOOL_VERSION
 
 ENV USER=pgpool \
     UID=999 \
-    PGPOOL_DATA=/opt/pgpool
+    PGPOOL_DATA=/opt/pgpool \
+    PGPOOL_PORT=5432 \
+    PGPOOL_MANAGER_PORT=9898 \
+    PGPOOL_LOG_LEVEL=info \
+    BACKEND_HOSTS=""
 
 ENV GROUP=${USER} \
     GID=${UID}
@@ -32,22 +36,25 @@ RUN groupadd -g ${GID} ${GROUP} && \
     useradd -u ${UID} -g ${GROUP} -m -d ${PGPOOL_DATA} -s /bin/bash ${USER} && \
     mkdir -p ${PGPOOL_DATA}/conf ${PGPOOL_DATA}/run ${PGPOOL_DATA}/var && \
     chown -R ${UID}:${GID} ${PGPOOL_DATA} && \
-    chmod 700 ${PGPOOL_DATA}
+    chmod -R 770 ${PGPOOL_DATA}
 
 # Copy configuration templates
 COPY conf/* ${PGPOOL_DATA}/conf/
-
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh 
 # Set proper permissions on config files
-RUN chown ${UID}:${GID} ${PGPOOL_DATA}/conf/*.conf && \
-    chmod 600 ${PGPOOL_DATA}/conf/*.conf
+RUN chown ${UID}:${GID} ${PGPOOL_DATA}/conf/* && \
+    chmod 660 ${PGPOOL_DATA}/conf/* && \
+    chmod +x /usr/local/bin/entrypoint.sh
 
 # Health check
-HEALTHCHECK --interval=10s --timeout=5s --retries=3 \
-    CMD /usr/bin/pg_isready -p 5432 -h localhost || exit 1
+#HEALTHCHECK --interval=10s --timeout=5s --retries=3 \
+#    CMD /usr/bin/pg_isready -p 5432 -h localhost || exit 1
 
 EXPOSE 5432
 WORKDIR ${PGPOOL_DATA}
 USER ${USER}
 
-CMD ["/usr/sbin/pgpool", "-n", "-f", "/opt/pgpool/conf/pgpool.conf"]
+ENTRYPOINT ["entrypoint.sh"]
+
+#CMD ["tail", "-f", "/dev/null"]
 
