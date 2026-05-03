@@ -19,7 +19,8 @@ ENV USER=pgpool \
     PGPOOL_PORT=5432 \
     PGPOOL_MANAGER_PORT=9898 \
     PGPOOL_LOG_LEVEL=info \
-    BACKEND_HOSTS=""
+    BACKEND_HOSTS="" \
+    PGPOOL_BACKEND_USER=postgres
 
 ENV GROUP=${USER} \
     GID=${UID}
@@ -34,7 +35,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Create pgpool runtime group and user, then directory structure
 RUN groupadd -g ${GID} ${GROUP} && \
     useradd -u ${UID} -g ${GROUP} -m -d ${PGPOOL_DATA} -s /bin/bash ${USER} && \
-    mkdir -p ${PGPOOL_DATA}/conf ${PGPOOL_DATA}/run ${PGPOOL_DATA}/var && \
+    mkdir -p ${PGPOOL_DATA}/conf ${PGPOOL_DATA}/run ${PGPOOL_DATA}/logs && \
     chown -R ${UID}:${GID} ${PGPOOL_DATA} && \
     chmod -R 770 ${PGPOOL_DATA}
 
