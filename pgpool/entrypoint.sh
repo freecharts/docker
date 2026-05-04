@@ -11,6 +11,8 @@ echo "BACKEND_HOSTS: ${BACKEND_HOSTS:-}"
 # Default config file
 PGPOOL_CONF="${PGPOOL_DATA:-/opt/pgpool}/conf/pgpool.conf"
 
+# Clustering mode settings
+echo "backend_clustering_mode = 'snapshot_isolation'" >> "$PGPOOL_CONF"
 # Configure listen address and port from PGPOOL_PORT
 echo "listen_addresses = '*'" >> "$PGPOOL_CONF"
 echo "port = ${PGPOOL_PORT:-5432}" >> "$PGPOOL_CONF"
@@ -24,6 +26,9 @@ echo "pid_file_name = '${PGPOOL_DATA:-/opt/pgpool}/run/pgpool.pid'" >> "$PGPOOL_
 # Configure log directory
 echo "log_directory = '${PGPOOL_DATA:-/opt/pgpool}/logs'" >> "$PGPOOL_CONF"
 echo "logdir = '${PGPOOL_DATA:-/opt/pgpool}/logs'" >> "$PGPOOL_CONF"
+# Authentication settings
+#echo "enable_pool_hba = on" >> "$PGPOOL_CONF"
+#echo "pool_passwd = '${PGPOOL_DATA:-/opt/pgpool}/conf/pool_passwd'" >> "$PGPOOL_CONF"
 
 # Configure health checks for backend monitoring
 if [[ -n "${PGPOOL_BACKEND_USER:-}" ]]; then
