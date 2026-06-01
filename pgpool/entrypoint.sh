@@ -31,8 +31,9 @@ pid_file_name = '${PGPOOL_DATA:-/opt/pgpool}/run/pgpool.pid'
 log_directory = '${PGPOOL_DATA:-/opt/pgpool}/logs'
 logdir = '${PGPOOL_DATA:-/opt/pgpool}/logs'
 # Authentication settings
-postgresql_username = '${PGPOOL_BACKEND_USER:-postgres}'
-postgresql_password = '${PGPOOL_BACKEND_PASSWORD:-}'
+allow_clear_text_frontend_auth = on
+#postgresql_username = '${PGPOOL_BACKEND_USER:-postgres}'
+#postgresql_password = '${PGPOOL_BACKEND_PASSWORD:-}'
 EOF
 
   if [[ -n "${PGPOOL_BACKEND_USER:-}" ]]; then
