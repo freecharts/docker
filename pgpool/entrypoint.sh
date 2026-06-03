@@ -31,9 +31,10 @@ pid_file_name = '${PGPOOL_DATA:-/opt/pgpool}/run/pgpool.pid'
 log_directory = '${PGPOOL_DATA:-/opt/pgpool}/logs'
 logdir = '${PGPOOL_DATA:-/opt/pgpool}/logs'
 # Authentication settings
+enable_pool_hba = off
 allow_clear_text_frontend_auth = on
-#postgresql_username = '${PGPOOL_BACKEND_USER:-postgres}'
-#postgresql_password = '${PGPOOL_BACKEND_PASSWORD:-}'
+##postgresql_username = '${PGPOOL_BACKEND_USER:-postgres}'
+##postgresql_password = '${PGPOOL_BACKEND_PASSWORD:-}'
 EOF
 
   if [[ -n "${PGPOOL_BACKEND_USER:-}" ]]; then
@@ -48,7 +49,7 @@ EOF
   fi
 
   echo "include '$PGPOOL_DATA/conf/backends.conf'" >> "$PGPOOL_CONF"
-  echo "Generated automatically by entrypoint.sh" >> "$PGPOOL_BACKENDS_CONF"
+  echo "#Generated automatically by entrypoint.sh" >> "$PGPOOL_BACKENDS_CONF"
 
   if [[ -n "${BACKEND_HOSTS:-}" ]]; then
     echo "Configuring backends from BACKEND_HOSTS..."
@@ -77,6 +78,7 @@ EOF
 fi
 
 echo "End of configuration. Starting pgpool..."
+rm -f '${PGPOOL_DATA:-/opt/pgpool}/run/pgpool.pid'
 
 # If the first arg starts with '-', treat it as pgpool argument(s)
 if [[ "$#" -gt 0 && "$1" == -* ]]; then
