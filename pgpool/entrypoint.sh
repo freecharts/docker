@@ -32,6 +32,7 @@ log_directory = '${PGPOOL_DATA:-/opt/pgpool}/logs'
 logdir = '${PGPOOL_DATA:-/opt/pgpool}/logs'
 # Authentication settings
 enable_pool_hba = off
+pool_passwd = ''
 allow_clear_text_frontend_auth = on
 ##postgresql_username = '${PGPOOL_BACKEND_USER:-postgres}'
 ##postgresql_password = '${PGPOOL_BACKEND_PASSWORD:-}'
