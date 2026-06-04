@@ -8,16 +8,16 @@ PGPOOL_BACKENDS_CONF="${PGPOOL_DATA:-/opt/pgpool}/conf/backends.conf"
 mkdir -p "$(dirname "$PGPOOL_CONF")"
 
 if [[ -s "$PGPOOL_CONF" ]]; then
-  echo "Config file already exists at $PGPOOL_CONF. Skipping config generation."
+  echo "[INFO] Config file already exists at $PGPOOL_CONF. Skipping config generation."
 else
-  echo "Starting pgpool with arguments: $*"
-  echo "PGPOOL_DATA: ${PGPOOL_DATA:-/opt/pgpool}"
-  echo "PGPOOL_PORT: ${PGPOOL_PORT:-5432}"
-  echo "PGPOOL_MANAGER_PORT: ${PGPOOL_MANAGER_PORT:-9898}"
-  echo "Backends will be configured from BACKEND_HOSTS if set. Format: 'host1:port1,host2:port2,...'"
-  echo "BACKEND_HOSTS: ${BACKEND_HOSTS:-}"
-  echo "Generating configuration at $PGPOOL_CONF"
-  echo "Generating backends list at $PGPOOL_BACKENDS_CONF"
+  echo "[INFO] Starting pgpool with arguments: $*"
+  echo "[INFO] PGPOOL_DATA: ${PGPOOL_DATA:-/opt/pgpool}"
+  echo "[INFO] PGPOOL_PORT: ${PGPOOL_PORT:-5432}"
+  echo "[INFO] PGPOOL_MANAGER_PORT: ${PGPOOL_MANAGER_PORT:-9898}"
+  echo "[HINT] Backends will be configured from BACKEND_HOSTS if set. Format: 'host1:port1,host2:port2,...'"
+  echo "[INFO] BACKEND_HOSTS: ${BACKEND_HOSTS:-}"
+  echo "[INFO] Generating configuration at $PGPOOL_CONF"
+  echo "[INFO] Generating backends list at $PGPOOL_BACKENDS_CONF"
   cat > "$PGPOOL_CONF" <<EOF
 # Generated automatically by entrypoint.sh
 backend_clustering_mode = 'snapshot_isolation'
@@ -34,26 +34,24 @@ logdir = '${PGPOOL_DATA:-/opt/pgpool}/logs'
 enable_pool_hba = off
 pool_passwd = ''
 allow_clear_text_frontend_auth = on
-##postgresql_username = '${PGPOOL_BACKEND_USER:-postgres}'
-##postgresql_password = '${PGPOOL_BACKEND_PASSWORD:-}'
 EOF
 
   if [[ -n "${PGPOOL_BACKEND_USER:-}" ]]; then
     echo "health_check_user = '${PGPOOL_BACKEND_USER}'" >> "$PGPOOL_CONF"
-    echo "Configured health check user: ${PGPOOL_BACKEND_USER}"
+    echo "[INFO] Configured health check user: ${PGPOOL_BACKEND_USER}"
   fi
 
   if [[ -n "${PGPOOL_BACKEND_PASSWORD:-}" ]]; then
     echo "health_check_password = '${PGPOOL_BACKEND_PASSWORD}'" >> "$PGPOOL_CONF"
     echo "health_check_period = 10" >> "$PGPOOL_CONF"
-    echo "Health check password configured"
+    echo "[INFO] Health check password configured"
   fi
 
   echo "include '$PGPOOL_DATA/conf/backends.conf'" >> "$PGPOOL_CONF"
   echo "#Generated automatically by entrypoint.sh" >> "$PGPOOL_BACKENDS_CONF"
 
   if [[ -n "${BACKEND_HOSTS:-}" ]]; then
-    echo "Configuring backends from BACKEND_HOSTS..."
+    echo "[INFO] Configuring backends from BACKEND_HOSTS..."
     
     # Parse BACKEND_HOST format: "host1:port1,host2:port2,..."
     IFS=',' read -ra BACKENDS <<< "$BACKEND_HOSTS"
@@ -69,16 +67,17 @@ EOF
 
       echo "backend_hostname$idx = '$host'" >> "$PGPOOL_BACKENDS_CONF"
       echo "backend_port$idx = $port" >> "$PGPOOL_BACKENDS_CONF"
-      echo "Configured backend$idx: $host:$port"
+      echo "[INFO] Configured backend$idx: $host:$port"
 
       ((++idx))
     done
   fi
 
+  echo "[INFO] Setting permissions on config files..."
   chmod 600 "$PGPOOL_CONF"
 fi
 
-echo "End of configuration. Starting pgpool..."
+echo "[INFO] End of configuration. Starting pgpool..."
 rm -f '${PGPOOL_DATA:-/opt/pgpool}/run/pgpool.pid'
 
 # If the first arg starts with '-', treat it as pgpool argument(s)
@@ -91,5 +90,5 @@ if [[ "$#" -eq 0 ]]; then
   set -- "pgpool" "-n" "-f" "$PGPOOL_CONF"
 fi
 
-echo "Execute command: $*"
+echo "[INFO] Execute command: $*"
 exec "$@"

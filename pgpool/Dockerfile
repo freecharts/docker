@@ -29,11 +29,10 @@ ENV GROUP=${USER} \
 RUN apt-get update && apt-get install -y --no-install-recommends \
     pgpool2=${PGPOOL_VERSION} \
     postgresql-client \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
+    ca-certificates && \
+    rm -rf /var/lib/apt/lists/* && \
 # Create pgpool runtime group and user, then directory structure
-RUN groupadd -g ${GID} ${GROUP} && \
+    groupadd -g ${GID} ${GROUP} && \
     useradd -u ${UID} -g ${GROUP} -m -d ${PGPOOL_DATA} -s /bin/bash ${USER} && \
     mkdir -p ${PGPOOL_DATA}/conf ${PGPOOL_DATA}/run ${PGPOOL_DATA}/logs && \
     chown -R ${UID}:${GID} ${PGPOOL_DATA} && \
