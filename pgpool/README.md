@@ -1,4 +1,4 @@
-# pgpool Docker Image
+# Pgpool II Docker Image
 
 Minimal Docker setup for pgpool-II using Debian 13.4-slim.
 
@@ -21,7 +21,7 @@ docker run -d -p 5432:5432 --network pg -e BACKEND_HOSTS=pg01:5432,pg02:5432 -e 
 ## Params
 
 | Parameter | Type | Default | Description |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `BASE_IMAGE` | Docker build ARG | `debian` | Base image repository used for the final container. |
 | `BASE_IMAGE_TAG` | Docker build ARG | `13.4-slim` | Tag for the base Debian image. |
 | `PGPOOL_VERSION` | Docker build ARG | `4.6.1-2` | Version of the `pgpool2` runtime package installed in the image. |
