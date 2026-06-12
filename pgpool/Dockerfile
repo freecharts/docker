@@ -29,7 +29,7 @@ ENV GROUP=${USER} \
 
 # Install pgpool2 runtime package and dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    postgresql-${POSTGRESQL_VERSION}-pgpool2 \
+    postgresql-${POSTGRESQL_VERSION}-pgpool2=${PGPOOL_VERSION} \
     pgpool2=${PGPOOL_VERSION} \
     postgresql-client \
     ca-certificates && \
