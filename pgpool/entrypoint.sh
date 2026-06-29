@@ -3,6 +3,7 @@ set -euo pipefail
 
 # Default config file
 PGPOOL_CONF="${PGPOOL_DATA:-/opt/pgpool}/conf/pgpool.conf"
+PCP_CONF="${PGPOOL_DATA:-/opt/pgpool}/conf/pcp.conf"
 PGPOOL_BACKENDS_CONF="${PGPOOL_DATA:-/opt/pgpool}/conf/backends.conf"
 # Create config directory if needed
 mkdir -p "$(dirname "$PGPOOL_CONF")"
@@ -32,8 +33,9 @@ log_directory = '${PGPOOL_DATA:-/opt/pgpool}/logs'
 logdir = '${PGPOOL_DATA:-/opt/pgpool}/logs'
 # Authentication settings
 enable_pool_hba = off
-pool_passwd = ''
+pool_passwd = '${PGPOOL_DATA:-/opt/pgpool}/conf/pool_passwd'
 allow_clear_text_frontend_auth = on
+load_balance_mode = on
 EOF
 
   if [[ -n "${PGPOOL_BACKEND_USER:-}" ]]; then
@@ -78,7 +80,7 @@ EOF
 fi
 
 echo "[INFO] End of configuration. Starting pgpool..."
-rm -f '${PGPOOL_DATA:-/opt/pgpool}/run/pgpool.pid'
+rm -f "${PGPOOL_DATA:-/opt/pgpool}/run/pgpool.pid"
 
 # If the first arg starts with '-', treat it as pgpool argument(s)
 if [[ "$#" -gt 0 && "$1" == -* ]]; then
@@ -87,7 +89,7 @@ fi
 
 # If the user did not supply a command, use default config file
 if [[ "$#" -eq 0 ]]; then
-  set -- "pgpool" "-n" "-f" "$PGPOOL_CONF"
+  set -- "pgpool" "-n" "-f" "$PGPOOL_CONF" -F "$PCP_CONF"
 fi
 
 echo "[INFO] Execute command: $*"

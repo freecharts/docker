@@ -4,6 +4,7 @@
 ARG BASE_IMAGE=debian
 ARG BASE_IMAGE_TAG=13.4-slim
 ARG PGPOOL_VERSION=4.6.1-2
+ARG POSTGRESQL_VERSION=17
 
 FROM ${BASE_IMAGE}:${BASE_IMAGE_TAG}
 LABEL author="https://github.com/papieric"
@@ -12,6 +13,7 @@ LABEL organization.url="https://github.com/freecharts"
 LABEL description="Pgpool-II is a middleware that works between PostgreSQL servers and a PostgreSQL database client. It provides connection pooling, replication, load balancing, and automatic failover capabilities for PostgreSQL databases."
 
 ARG PGPOOL_VERSION
+ARG POSTGRESQL_VERSION
 
 ENV USER=pgpool \
     UID=999 \
@@ -27,8 +29,13 @@ ENV GROUP=${USER} \
 
 # Install pgpool2 runtime package and dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget \
+    dnsutils \
+    jq \
+    postgresql-${POSTGRESQL_VERSION}-pgpool2=${PGPOOL_VERSION} \
     pgpool2=${PGPOOL_VERSION} \
     postgresql-client \
+    openssl \
     ca-certificates && \
     rm -rf /var/lib/apt/lists/* && \
 # Create pgpool runtime group and user, then directory structure
